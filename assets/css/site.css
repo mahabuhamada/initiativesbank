@@ -1403,6 +1403,7 @@ body[data-page="submit"] .fab { display: none; }
 .a11y-scrim { position: fixed; inset: 0; z-index: 71; background: rgba(16,23,64,.35); backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .3s; }
 .a11y.open .a11y-scrim { opacity: 1; pointer-events: auto; }
 .a11y-panel { position: fixed; z-index: 72; top: 12px; bottom: 12px; inset-inline-start: 12px; width: 400px; max-width: calc(100vw - 24px); display: flex; flex-direction: column; background: #F6F8FC; color: var(--navy, #101740); border-radius: 26px; overflow: hidden; box-shadow: 0 40px 80px -30px rgba(16,23,64,.6); animation: a11yIn .45s cubic-bezier(.22,.8,.25,1); font-size: 14px; }
+.a11y-panel[hidden] { display: none !important; }
 @keyframes a11yIn { from { opacity: 0; transform: translateX(30px); } }
 .a11y-head { display: flex; align-items: center; gap: 12px; padding: 18px 18px 16px; color: #fff; background: linear-gradient(135deg, var(--navy, #101740), var(--blue)); position: relative; overflow: hidden; }
 .a11y-head::after { content: ""; position: absolute; width: 150px; height: 150px; inset-inline-end: -40px; top: -60px; -webkit-mask: var(--pmask); mask: var(--pmask); background: rgba(255,255,255,.08); }
