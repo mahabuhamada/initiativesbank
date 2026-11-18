@@ -37,6 +37,7 @@
     copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
     trash: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    logout: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>',
     ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
     chev: '<path d="m15 18-6-6 6-6"/>',
     up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>',
@@ -938,6 +939,12 @@
         <div style="display:flex;gap:8px"><button class="btn" id="gSave">حفظ الإعدادات</button><button class="btn primary" id="gPub">${svg('send')}نشر الآن</button></div><div id="gMsg"></div></div></section>
       <section class="card"><div class="card-h"><h3>تصدير واستيراد</h3></div><div class="card-b form"><p class="muted" style="margin:0;font-size:13px">للنسخ الاحتياطي أو النشر اليدوي: ضع <code>site-data.js</code> داخل مجلد <code>data</code> في المستودع.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="exJs">${svg('download')}site-data.js</button><button class="btn" id="exJson">${svg('download')}JSON</button><button class="btn" id="imJson">${svg('upload')}استيراد JSON</button></div></div></section>
+      <section class="card"><div class="card-h"><h3 style="display:flex;gap:8px;align-items:center">${svg('lock', 'width="16" height="16"')}بيانات الدخول للوحة</h3></div><div class="card-b form">
+        <p class="muted" style="margin:0;font-size:13px">تُحفظ في المسودة، وتسري بعد <b>النشر</b>. تُخزَّن كلمة المرور مشفّرة (PBKDF2) لا كنص.</p>
+        <div class="form cols"><label class="f"><span>اسم المستخدم</span><input class="in" id="aUser" dir="ltr" autocomplete="username" value="${esc((D.site.admin && D.site.admin.user) || (window.IBAuth && IBAuth.user()) || 'admin')}"></label>
+        <label class="f"><span>كلمة المرور الجديدة <small>8 أحرف على الأقل</small></span><input class="in" id="aPass" dir="ltr" type="password" autocomplete="new-password"></label>
+        <label class="f"><span>تأكيد كلمة المرور</span><input class="in" id="aPass2" dir="ltr" type="password" autocomplete="new-password"></label></div>
+        <div><button class="btn" id="aSave">${svg('lock')}تحديث بيانات الدخول</button></div></div></section>
       <section class="card"><div class="card-h"><h3 style="display:flex;gap:8px;align-items:center">${svg('lock', 'width="16" height="16"')}عن الأمان</h3></div><div class="card-b"><p class="muted" style="margin:0;font-size:13.5px;line-height:1.9">اللوحة صفحة ثابتة: من يفتحها يرى البيانات العامة نفسها الموجودة في الموقع، ولا يستطيع تغيير الموقع المنشور بدون رمز GitHub. استخدم رمزًا محدود الصلاحية على هذا المستودع فقط، ولا تشاركه. طلبات المتقدّمين لا تغادر هذا الجهاز.</p></div></section>
     </div>`;
     const after = () => {
@@ -958,6 +965,14 @@
           msg.innerHTML = `<div class="note">${svg('check', 'width="16" height="16"')}<div>نُشر إلى <b dir="ltr">${esc(c.owner)}/${esc(c.repo)}@${esc(c.branch)}</b>. يظهر على الموقع خلال دقيقة تقريبًا.</div></div>`;
         } catch (err) { msg.innerHTML = `<div class="note bad">${svg('alert', 'width="16" height="16"')}<div>فشل النشر: ${esc(err.message)}</div></div>`; }
         $('#gPub').disabled = false;
+      };
+      $('#aSave').onclick = async () => {
+        const u = $('#aUser').value.trim(); const p = $('#aPass').value;
+        if (!u) return toast('أدخل اسم المستخدم', null, true);
+        if (p.length < 8) return toast('كلمة المرور قصيرة: 8 أحرف على الأقل', null, true);
+        if (p !== $('#aPass2').value) return toast('كلمتا المرور غير متطابقتين', null, true);
+        try { D.site.admin = await IBAuth.makeCreds(u, p); } catch (e) { return toast('تعذّر التشفير في هذا المتصفح', null, true); }
+        save('حُفظت بيانات الدخول في المسودة — انشر لتسري'); log('تحديث بيانات الدخول للوحة'); route();
       };
       $('#exJs').onclick = () => download('site-data.js', siteJS(exportData()), 'text/javascript');
       $('#exJson').onclick = () => download('site-data.json', JSON.stringify(exportData(), null, 1));
@@ -1041,7 +1056,7 @@
     <div class="brand"><img src="../${esc(D.site.brand.logoLight)}" alt="${esc(D.site.brand.name)}"></div>
     <div class="brand-chip">لوحة تحكم بنك المبادرات · مبادرة من ${esc(D.site.brand.org)}</div>
     <nav class="nav" id="nav"></nav>
-    <div class="me"><span class="avatar">ب</span><div style="min-inline-size:0"><b>فريق بنك المبادرات</b><small><a href="../index.html" target="_blank" rel="noopener">فتح الموقع ↗</a></small></div></div>
+    <div class="me"><span class="avatar">ب</span><div style="min-inline-size:0"><b>${esc((window.IBAuth && IBAuth.user()) || 'فريق بنك المبادرات')}</b><small><a href="../index.html" target="_blank" rel="noopener">فتح الموقع ↗</a></small></div></div>
   </aside>
   <div class="main">
     <header class="top">
@@ -1050,6 +1065,7 @@
       <button class="search" id="openPal">${svg('search', 'width="16" height="16"')}<span>ابحث عن مبادرة أو انتقل إلى قسم…</span><kbd>Ctrl K</kbd></button>
       <a class="sync" id="sync" href="#publish"></a>
       <button class="icon-btn" id="themeBtn" aria-label="تبديل الوضع الليلي">${svg('moon')}</button>
+      <button class="icon-btn" id="logoutBtn" aria-label="تسجيل الخروج" title="تسجيل الخروج">${svg('logout')}</button>
     </header>
     <main class="page" id="page" tabindex="-1"></main>
   </div>`;
@@ -1088,6 +1104,7 @@
   });
   try { const th = localStorage.getItem(THEME_KEY); if (th) document.documentElement.dataset.theme = th; } catch (e) { /* */ }
   $('#themeBtn').onclick = () => { const isDark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; const d = isDark ? 'light' : 'dark'; document.documentElement.dataset.theme = d; try { localStorage.setItem(THEME_KEY, d); } catch (e) { /* */ } };
+  $('#logoutBtn').onclick = () => { if (window.IBAuth) IBAuth.logout(); };
   $('#menuBtn').onclick = (e) => { e.stopPropagation(); $('#side').classList.toggle('open'); };
   addEventListener('hashchange', route);
   route();

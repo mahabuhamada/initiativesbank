@@ -87,7 +87,7 @@ fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="U
 ${urls.map(([u, d, p]) => `  <url><loc>${BASE}${u}</loc><lastmod>${d}</lastmod><priority>${p}</priority></url>`).join('\n')}
 </urlset>
 `);
-fs.writeFileSync(path.join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${BASE}sitemap.xml\n`);
+fs.writeFileSync(path.join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}sitemap.xml\n`);
 if (S.seo && S.seo.cname) fs.writeFileSync(path.join(OUT, 'CNAME'), S.seo.cname + '\n');
 
 console.log(`تم توليد ${n} صفحة في dist/ مع sitemap.xml (${urls.length} رابطًا)`);

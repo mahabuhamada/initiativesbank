@@ -143,7 +143,7 @@
       <nav class="ft-card ft-links" aria-label="روابط التذييل">
         ${grp('البنك', 'people', [['about.html', 'من نحن'], ['partners.html', 'الشركاء'], ['support.html', 'ادعم بنك المبادرات'], ['contact.html', 'تواصل معنا']])}
         ${grp('المحتوى', 'book', [['initiatives.html', 'مكتبة المبادرات'], ['ideas.html', 'بنك الأفكار'], ['news.html', 'الإعلانات والأخبار']])}
-        ${grp('شارك', 'spark', [['submit.html', 'قدّم فكرتك'], ['submit.html?form=pwd', 'مبادرة لذوي الإعاقة'], ['admin/index.html', 'لوحة التحكم']])}
+        ${grp('شارك', 'spark', [['submit.html', 'قدّم فكرتك'], ['submit.html?form=pwd', 'مبادرة لذوي الإعاقة']])}
       </nav>
       <div class="ft-card ft-contact">
         <h4>تواصل معنا</h4>

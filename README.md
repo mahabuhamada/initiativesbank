@@ -18,7 +18,7 @@
 index.html, initiatives.html, initiative.html, news.html, post.html,
 ideas.html, about.html, partners.html, support.html, contact.html,
 submit.html, privacy.html, terms.html, 404.html   ← صفحات الموقع
-admin/                 ← لوحة التحكم
+s-admin/               ← لوحة التحكم (محمية بشاشة دخول)
 data/site-data.js      ← كل بيانات الموقع (تقرأها الصفحات واللوحة)
 data/site-data.json    ← نسخة JSON من نفس البيانات
 assets/css, assets/js  ← التصميم والسكربتات
@@ -41,7 +41,7 @@ npm run build    # يولّد الموقع الجاهز في dist/
 - صفحة مستقلة لكل مبادرة `initiative-<id>.html` ولكل خبر `post-<id>.html` بروابط ثابتة.
 - عنوان ووصف ورابط قانوني (canonical) ووسوم مشاركة Open Graph وTwitter لكل صفحة.
 - بيانات منظمة JSON-LD: المنظمة، الموقع، مسار التنقل، المبادرة (CreativeWork)، الخبر (NewsArticle)، والمكتبة (ItemList).
-- `sitemap.xml` و`robots.txt` (تُستبعد `/admin/` من الفهرسة).
+- `sitemap.xml` و`robots.txt` (اللوحة لا تُذكر فيه، وصفحتها تحمل `noindex`).
 - الصفحات تبقى تفاعلية بالكامل بعد التحميل.
 
 **النشر التلقائي:** ملف `.github/workflows/deploy.yml` يبني الموقع وينشره على GitHub Pages عند كل دفع إلى `main`، بما في ذلك كل «نشر» من لوحة التحكم. فعّله مرة واحدة من **Settings ← Pages ← Source: GitHub Actions**. الرابط الأساسي للموقع (للـ canonical وخريطة الموقع) يُضبط من **اللوحة ← الإعدادات العامة ← الوصول والسيو**.
@@ -88,7 +88,7 @@ npm run build    # يولّد الموقع الجاهز في dist/
 ```bash
 python3 -m http.server 8000
 # الموقع:  http://localhost:8000
-# اللوحة:  http://localhost:8000/admin/
+# اللوحة:  http://localhost:8000/s-admin/
 ```
 
 ## النشر على GitHub Pages
