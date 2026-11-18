@@ -73,6 +73,11 @@
     linkedin: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/>',
     youtube: '<rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9v6l5-3z"/>',
     tiktok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3-3.46M14 3c.5 2.5 2.3 4 5 4"/>',
+    brain: '<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 3V4zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 3V4z"/>',
+    book: '<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/>',
+    chev: '<path d="m9 6 6 6-6 6"/>',
+    home: '<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h4.5v-5h3v5H18V9.5"/>',
+    up: '<path d="M12 19V5M6 11l6-6 6 6"/>',
     whatsapp: '<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7L4 20z"/><path d="M9 9c0 3 3 6 6 6l1-1.5-2-1-1 1c-1-.5-2-1.5-2.5-2.5l1-1-1-2L9 9z"/>',
   };
   function icon(name, cls) {
@@ -115,38 +120,51 @@
 </header>`;
   }
 
-  function footer() {
+  function footer(active) {
     const d = data(); const s = d.site;
-    const col = (t, items) => `<div><h4>${t}</h4><ul>${items.map(([h, l]) => `<li><a href="${url(h)}">${l}</a></li>`).join('')}</ul></div>`;
+    const nInit = live(d.initiatives).length; const nPosts = live(d.posts).length;
+    const grp = (t, ic, items) => `<details class="ft-grp" open><summary>${icon(ic)}<h4>${t}</h4>${icon('chev')}</summary><ul>${items.map(([h, l]) => `<li><a href="${url(h)}">${l}</a></li>`).join('')}</ul></details>`;
+    const tile = (href, ic, lbl, val, cls, ext) => `<a class="ft-tile ${cls}" href="${href}"${ext ? ' target="_blank" rel="noopener"' : ''}><span class="ti">${icon(ic)}</span><span><small>${lbl}</small><b${cls === 'tel' ? ' dir="ltr"' : ''}>${val}</b></span></a>`;
+    const dock = [['index.html', 'الرئيسية', 'home', 'home'], ['initiatives.html', 'المبادرات', 'grid', 'initiatives'], null, ['ideas.html', 'الأفكار', 'brain', 'ideas']];
     return `
-<footer class="site-footer">
+<footer class="site-footer ft">
   <div class="wrap">
-    <div class="footer-grid">
-      <div class="about">
-        <img src="${src(s.brand.logoLight)}" alt="${esc(s.brand.name)}" width="160" height="45">
+    <section class="ft-cta">
+      <span class="ft-cta-ic">${icon('bulb')}</span>
+      <div><h3>لديك فكرة تصنع فرقًا؟</h3><p>قدّمها الآن، ونساعدك في تحويلها إلى مبادرة على أرض الواقع.</p></div>
+      <div class="ft-cta-act"><a class="btn btn-white btn-sm" href="${url('submit.html')}">${icon('bulb')} قدّم فكرتك</a><a class="btn btn-glass btn-sm" href="${url('contact.html')}">${icon('mail')} تواصل معنا</a></div>
+    </section>
+    <div class="ft-bento">
+      <div class="ft-card ft-brand">
+        <img src="${src(s.brand.logoLight)}" alt="${esc(s.brand.name)}" width="160" height="45" loading="lazy">
         <p>${esc(s.about.text[0])}</p>
-        <a class="btn btn-glass btn-sm" href="${url('submit.html')}">${icon('bulb')} قدّم فكرتك</a>
+        <div class="socials">${s.contact.social.map((x) => `<a href="${esc(x.url)}" target="_blank" rel="noopener" aria-label="${esc(x.name)}">${icon(socialIcon[x.name] || 'link')}</a>`).join('')}</div>
       </div>
-      ${col('البنك', [['about.html', 'من نحن'], ['partners.html', 'الشركاء'], ['support.html', 'ادعم بنك المبادرات'], ['contact.html', 'تواصل معنا']])}
-      ${col('المحتوى', [['initiatives.html', 'مكتبة المبادرات'], ['ideas.html', 'بنك الأفكار'], ['news.html', 'الإعلانات والأخبار']])}
-      ${col('شارك', [['submit.html', 'قدّم فكرتك'], ['submit.html?form=pwd', 'مبادرة لذوي الإعاقة'], ['admin/index.html', 'لوحة التحكم']])}
-      <div>
-        <h4>تواصل</h4>
-        <ul>
-          <li><a href="mailto:${esc(s.contact.ibEmail)}">${esc(s.contact.ibEmail)}</a></li>
-          <li><a href="tel:${esc(s.contact.phone)}" dir="ltr">${esc(s.contact.phone)}</a></li>
-          <li>${esc(s.contact.offices[0].city)} · فلسطين</li>
-        </ul>
-        <div class="socials" style="margin-top:14px">${s.contact.social.map((x) => `<a href="${esc(x.url)}" target="_blank" rel="noopener" aria-label="${esc(x.name)}">${icon(socialIcon[x.name] || 'link')}</a>`).join('')}</div>
+      <nav class="ft-card ft-links" aria-label="روابط التذييل">
+        ${grp('البنك', 'people', [['about.html', 'من نحن'], ['partners.html', 'الشركاء'], ['support.html', 'ادعم بنك المبادرات'], ['contact.html', 'تواصل معنا']])}
+        ${grp('المحتوى', 'book', [['initiatives.html', 'مكتبة المبادرات'], ['ideas.html', 'بنك الأفكار'], ['news.html', 'الإعلانات والأخبار']])}
+        ${grp('شارك', 'spark', [['submit.html', 'قدّم فكرتك'], ['submit.html?form=pwd', 'مبادرة لذوي الإعاقة'], ['admin/index.html', 'لوحة التحكم']])}
+      </nav>
+      <div class="ft-card ft-contact">
+        <h4>تواصل معنا</h4>
+        ${tile('mailto:' + esc(s.contact.ibEmail), 'mail', 'البريد الإلكتروني', esc(s.contact.ibEmail), 'mail')}
+        ${tile('tel:' + esc(s.contact.phone), 'phone', 'الهاتف', esc(s.contact.phone), 'tel')}
+        ${tile(url('contact.html'), 'pin', `${s.contact.offices.length} مكاتب`, esc(s.contact.offices[0].city) + ' · فلسطين', 'loc')}
+      </div>
+      <div class="ft-card ft-nums">
+        <h4>البنك بالأرقام</h4>
+        <div class="ft-n"><a href="${url('initiatives.html')}"><b>${num(nInit)}</b><small>مبادرة</small></a><a href="${url('news.html')}"><b>${num(nPosts)}</b><small>خبر</small></a><a href="${url('contact.html')}"><b>${num(s.contact.offices.length)}</b><small>مكاتب</small></a></div>
+        <button type="button" class="ft-top" data-top>${icon('up')} العودة للأعلى</button>
       </div>
     </div>
-    <div class="footer-bottom">
+    <div class="ft-bottom">
       <span>© ${new Date().getFullYear()} ${esc(s.brand.name)} — مبادرة من <a href="${esc(s.brand.orgUrl)}" target="_blank" rel="noopener">${esc(s.brand.org)}</a></span>
-      <span><a href="${url('privacy.html')}">سياسة الخصوصية</a> · <a href="${url('terms.html')}">الشروط والأحكام</a></span>
+      <span class="ft-legal"><a href="${url('privacy.html')}">سياسة الخصوصية</a><a href="${url('terms.html')}">الشروط والأحكام</a></span>
     </div>
   </div>
 </footer>
-<a class="fab" href="${url('submit.html')}">${icon('bulb')} قدّم فكرتك</a>`;
+<a class="fab" href="${url('submit.html')}">${icon('bulb')}<span>قدّم فكرتك</span></a>
+<nav class="dock" aria-label="تنقل سريع">${dock.map((x) => x ? `<a href="${url(x[0])}"${x[3] === active ? ' aria-current="page"' : ''}>${icon(x[2])}<span>${x[1]}</span></a>` : `<a class="dock-main" href="${url('submit.html')}" aria-label="قدّم فكرتك"><i>${icon('bulb')}</i><span>قدّم فكرتك</span></a>`).join('')}<button type="button" class="dock-menu" aria-controls="nav" aria-expanded="false">${icon('menu')}<span>القائمة</span></button></nav>`;
   }
 
   /* ====== الوصول للجميع (لوحة إتاحة احترافية) ====== */
@@ -268,11 +286,22 @@
 
   function mountChrome(active) {
     // عند فتح صفحة مولّدة مسبقًا نعيد بناء الواجهة حيّةً من البيانات
-    document.querySelectorAll('body > .site-header, body > header.nav-shell, body > .site-footer, body > footer, body > .fab, body > .a11y, body > .preview-bar, body > .skip').forEach((x) => x.remove());
+    document.querySelectorAll('body > .site-header, body > header.nav-shell, body > .site-footer, body > footer, body > .fab, body > .dock, body > .a11y, body > .preview-bar, body > .skip').forEach((x) => x.remove());
     document.body.insertAdjacentHTML('afterbegin', header(active));
-    document.body.insertAdjacentHTML('beforeend', footer());
+    document.body.insertAdjacentHTML('beforeend', footer(active));
     const btn = document.querySelector('.menu-btn'); const nav = document.getElementById('nav');
-    btn.addEventListener('click', () => { const o = nav.classList.toggle('open'); btn.setAttribute('aria-expanded', o); });
+    const dm = document.querySelector('.dock-menu');
+    const setNav = (o) => { nav.classList.toggle('open', o); btn.setAttribute('aria-expanded', o); if (dm) dm.setAttribute('aria-expanded', o); document.documentElement.classList.toggle('nav-open', o); };
+    btn.addEventListener('click', () => setNav(!nav.classList.contains('open')));
+    if (dm) dm.addEventListener('click', () => { const o = !nav.classList.contains('open'); setNav(o); if (o) window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    nav.addEventListener('click', (e) => { if (e.target.closest('a')) setNav(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) setNav(false); });
+    document.addEventListener('click', (e) => { if (nav.classList.contains('open') && !e.target.closest('#nav, .menu-btn, .dock-menu')) setNav(false); });
+    const fab = document.querySelector('.fab'); const ftEl = document.querySelector('.ft');
+    if (fab && ftEl && 'IntersectionObserver' in window) new IntersectionObserver(([e]) => fab.classList.toggle('away', e.isIntersecting)).observe(ftEl);
+    const up = document.querySelector('[data-top]'); if (up) up.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    // مجموعات روابط الفوتر: مطوية على الجوال، مفتوحة على الشاشات الكبيرة
+    if (window.matchMedia) { const mq = matchMedia('(max-width: 760px)'); const fold = () => document.querySelectorAll('.ft-grp').forEach((g) => { g.open = !mq.matches; }); fold(); mq.addEventListener && mq.addEventListener('change', fold); }
     if (previewOn()) {
       document.body.insertAdjacentHTML('beforeend', `<div class="preview-bar" role="status">وضع المعاينة: تعرض مسودة لوحة التحكم <button type="button">إيقاف</button></div>`);
       document.querySelector('.preview-bar button').onclick = () => { safeDel(PREVIEW_KEY); location.reload(); };
